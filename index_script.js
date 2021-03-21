@@ -6,6 +6,7 @@ window.onload = (e) => {
     //Getting the color and text input for inputting the color for the brush
     var display_color_text = document.querySelector("#text_show_color");
     var color_selector = document.querySelector("#input_select_color");
+    var button_clear_canvas = document.querySelector("#button_clear_canvas");
 
     var context = canvas.getContext("2d");
 
@@ -187,6 +188,11 @@ window.onload = (e) => {
     color_selector.addEventListener("input", function(e){
         current_brush_color = color_selector.value;
         display_color_text.value = current_brush_color;
+    });
+
+    //Event listener to clear the content of canvas
+    button_clear_canvas.addEventListener("click", function(e){
+        context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
     });
 
 };
