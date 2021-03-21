@@ -167,16 +167,17 @@ window.onload = (e) => {
     //Creating the event listeners for the canvas
 
     canvas.addEventListener("mousedown", function(e){
-        [startPointX, startPointY] = [e.offsetX, e.offsetY]
+        [startPointX, startPointY] = [parseInt(e.offsetX), parseInt(e.offsetY)];
     });
 
     canvas.addEventListener("mouseup", function(e){
-        [endPointX, endPointY] = [e.offsetX, e.offsetY]
+        [endPointX, endPointY] = [parseInt(e.offsetX), parseInt(e.offsetY)];
+        console.log("Start point: "+ startPointX.toString() + "," + startPointY.toString() + "\n" + "Ending point: " + endPointX.toString() + "," + endPointY.toString());
         draw_line(startPointX, startPointY, endPointX, endPointY, current_brush_color, selected_size);
     });
 
     canvas.addEventListener("mousemove", function(e){
-        [loc_x, loc_y] = [e.offsetX, e.offsetY]
+        [loc_x, loc_y] = [e.offsetX, e.offsetY];
         location_text.textContent = `Location of mouse is at: (${loc_x}, ${loc_y})`;
     });
 
