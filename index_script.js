@@ -7,6 +7,7 @@ window.onload = (e) => {
     var display_color_text = document.querySelector("#text_show_color");
     var color_selector = document.querySelector("#input_select_color");
     var button_clear_canvas = document.querySelector("#button_clear_canvas");
+    var button_default_settings = document.querySelector("#button_default_settings");
 
     var context = canvas.getContext("2d");
 
@@ -176,7 +177,7 @@ window.onload = (e) => {
 
     canvas.addEventListener("mousemove", function(e){
         [loc_x, loc_y] = [e.offsetX, e.offsetY]
-        location_text.innerHTML = `Location of mouse is at: (${loc_x}, ${loc_y})`;
+        location_text.textContent = `Location of mouse is at: (${loc_x}, ${loc_y})`;
     });
 
     //Event listener for the size dropdown menu
@@ -193,6 +194,16 @@ window.onload = (e) => {
     //Event listener to clear the content of canvas
     button_clear_canvas.addEventListener("click", function(e){
         context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+    });
+
+    //Event listener to reset to default settings
+    button_default_settings.addEventListener("click", function(e){
+        selected_size = 1;
+        size_dropdown.value = "";
+
+        color_selector.value = "#000000";
+        current_brush_color = color_selector.value;
+        display_color_text.value = color_selector.value;
     });
 
 };
