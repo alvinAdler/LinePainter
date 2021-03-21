@@ -11,12 +11,13 @@
                 <h1>2D Line Drawer</h1>
                 <p>Please click and drag within the canvas to draw a line</p>
                 <p id="mouse_loc">Location of mouse is at: (x, y)</p>
-                <canvas id="sample_canvas" width="600" height="400">
+                <canvas id="sample_canvas" width="1000" height="500">
                     
                 </canvas>
             </div>
 
             <div class="toolbox">
+                <!-- Component to control the size of the brush -->
                 <select id="id_sizes">
                     <option value="" selected disabled hidden>Select Brush Size</option>
                     <option value="1">1</option>
@@ -25,6 +26,12 @@
                     <option value="4">4</option>
                     <option value="5">5</option>
                 </select>
+
+                <!-- Component to control the color of the brush -->
+                <div class="input_color">
+                    <input type="text" id="text_show_color" readonly>
+                    <input type="color" id="input_select_color">
+                </div>
             </div>
         </div>
     </body>
