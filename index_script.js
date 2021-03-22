@@ -50,6 +50,21 @@ function closeModalFunction(modal){
     overlay.classList.remove("active");
 }
 
+function hold_coordinate(starting_point_x, starting_point_y, ending_point_x, ending_point_y){
+    var temp = [starting_point_x, starting_point_y, ending_point_x, ending_point_y];
+    return temp;
+}
+
+function gather_line_data(line_coordinates, line_color, line_weight){
+    var current_line_properties = {
+        "line_coordinates":line_coordinates,
+        "line_color":line_color,
+        "line_weight":line_weight
+    };
+
+    return current_line_properties;
+}
+
 window.onload = (e) => {
     var canvas = document.getElementById("sample_canvas");
     var location_text = document.getElementById("mouse_loc");
@@ -67,20 +82,16 @@ window.onload = (e) => {
     const viewModal = document.querySelector("#button_backend_view");
     const closeModal = document.querySelectorAll("[data-close-button]");
     const overlay = document.querySelector("#overlay");
-    var element = document.querySelector(".modal-footer");
 
-    //Section of code to add new tag via javascript. Will be required later.
-    // var sample_tag = document.createElement("button");
-    // var sample_text = document.createTextNode("Sample");
-
-    // sample_tag.appendChild(sample_text);
-    // element.appendChild(sample_tag);
-
+    //Global variables
     var context = canvas.getContext("2d");
     var startPointX, startPointY, endPointX, endPointY;
     var selected_size = 1;
     var current_brush_color = "#000000";
     var chosen_modal_action = "";
+
+    //The data of a line consists of: starting and ending point of the line, the weight of the line, and the color of the line;
+    var line_data = [];
 
     //context.fillStyle = "rgba(0, 0, 0, 1)";
     context.fillStyle = current_brush_color;
@@ -241,6 +252,9 @@ window.onload = (e) => {
         [endPointX, endPointY] = [parseInt(e.offsetX), parseInt(e.offsetY)];
         console.log("Start point: "+ startPointX.toString() + "," + startPointY.toString() + "\n" + "Ending point: " + endPointX.toString() + "," + endPointY.toString());
         draw_line(startPointX, startPointY, endPointX, endPointY, current_brush_color, selected_size);
+
+        line_data.push(gather_line_data(hold_coordinate(startPointX, startPointY, endPointX, endPointY), display_color_text.value, selected_size))
+
     });
 
     canvas.addEventListener("mousemove", function(e){
@@ -279,6 +293,9 @@ window.onload = (e) => {
         const modal = document.querySelector(saveModal.dataset.modalTarget);
         chosen_modal_action = "save";
         openModalFunction(modal, chosen_modal_action);
+        line_data.forEach(item => {
+            console.log(item);
+        });
     })
 
     loadModal.addEventListener("click", (e) => {

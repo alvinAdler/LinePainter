@@ -5,5 +5,7 @@
 
     $conn = $db_connect->connect();
 
-    echo "Hello World";
+    if($_SERVER["REQUEST_METHOD"] == "POST"){
+        
+    }
 ?>
