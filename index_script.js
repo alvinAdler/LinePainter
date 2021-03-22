@@ -1,3 +1,21 @@
+function openModalFunction(modal){
+    if(modal == null){
+        return
+    }
+
+    modal.classList.add("active");
+    overlay.classList.add("active");
+}
+
+function closeModalFunction(modal){
+    if(modal == null){
+        return
+    }
+
+    modal.classList.remove("active");
+    overlay.classList.remove("active");
+}
+
 window.onload = (e) => {
     var canvas = document.getElementById("sample_canvas");
     var location_text = document.getElementById("mouse_loc");
@@ -8,6 +26,11 @@ window.onload = (e) => {
     var color_selector = document.querySelector("#input_select_color");
     var button_clear_canvas = document.querySelector("#button_clear_canvas");
     var button_default_settings = document.querySelector("#button_default_settings");
+
+    //Getting the modal components
+    const saveModal = document.querySelectorAll("[data-modal-target]");
+    const closeModal = document.querySelectorAll("[data-close-button]");
+    const overlay = document.querySelector("#overlay");
 
     var context = canvas.getContext("2d");
 
@@ -205,6 +228,27 @@ window.onload = (e) => {
         color_selector.value = "#000000";
         current_brush_color = color_selector.value;
         display_color_text.value = color_selector.value;
+    });
+
+    saveModal.forEach(button => {
+        button.addEventListener("click", (e) => {
+            const modal = document.querySelector(button.dataset.modalTarget);
+            openModalFunction(modal);
+        })
+    });
+    
+    closeModal.forEach(button => {
+        button.addEventListener("click", (e) => {
+            const modal = button.closest(".modal");
+            closeModalFunction(modal);
+        })
+    });
+
+    overlay.addEventListener("click", (e) => {
+        const modals = document.querySelectorAll(".modal.active");
+        modals.forEach(modal => {
+            closeModalFunction(modal);
+        });
     });
 
 };
