@@ -80,6 +80,7 @@ window.onload = (e) => {
     const saveModal = document.querySelector("#button_backend_save");
     const loadModal = document.querySelector("#button_backend_load");
     const viewModal = document.querySelector("#button_backend_view");
+    const submitModal = document.querySelectorAll(".button_submit_data")[0];
     const closeModal = document.querySelectorAll("[data-close-button]");
     const overlay = document.querySelector("#overlay");
 
@@ -92,6 +93,9 @@ window.onload = (e) => {
 
     //The data of a line consists of: starting and ending point of the line, the weight of the line, and the color of the line;
     var line_data = [];
+    var json_string = "";
+
+    var http_request = new XMLHttpRequest();
 
     //context.fillStyle = "rgba(0, 0, 0, 1)";
     context.fillStyle = current_brush_color;
@@ -253,8 +257,7 @@ window.onload = (e) => {
         console.log("Start point: "+ startPointX.toString() + "," + startPointY.toString() + "\n" + "Ending point: " + endPointX.toString() + "," + endPointY.toString());
         draw_line(startPointX, startPointY, endPointX, endPointY, current_brush_color, selected_size);
 
-        line_data.push(gather_line_data(hold_coordinate(startPointX, startPointY, endPointX, endPointY), display_color_text.value, selected_size))
-
+        line_data.push(gather_line_data(hold_coordinate(startPointX, startPointY, endPointX, endPointY), display_color_text.value, selected_size));
     });
 
     canvas.addEventListener("mousemove", function(e){
@@ -293,10 +296,29 @@ window.onload = (e) => {
         const modal = document.querySelector(saveModal.dataset.modalTarget);
         chosen_modal_action = "save";
         openModalFunction(modal, chosen_modal_action);
-        line_data.forEach(item => {
-            console.log(item);
-        });
-    })
+
+    });
+
+    submitModal.addEventListener("click", (e) => {
+        var data = {
+            "username":"Alvin",
+            "line_data":line_data
+        };
+
+        json_string = JSON.stringify(data);
+
+        http_request.open("POST", "mainscript.php", true);
+        http_request.setRequestHeader("Content-type", "application/json");
+
+        http_request.send(json_string);
+
+        http_request.onreadystatechange = function(e) {
+            if (http_request.readyState === 4 && http_request.status === 200) {
+                console.log(http_request.responseText);
+            }
+        }
+
+    });
 
     loadModal.addEventListener("click", (e) => {
         const modal = document.querySelector(loadModal.dataset.modalTarget);
