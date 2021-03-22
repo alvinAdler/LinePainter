@@ -1,10 +1,44 @@
-function openModalFunction(modal){
+function openModalFunction(modal, action){
     if(modal == null){
         return
     }
 
     modal.classList.add("active");
     overlay.classList.add("active");
+
+    var current_modal_header = modal.getElementsByClassName("modal-header")[0].getElementsByClassName("modal-title")[0];
+    var current_modal_body = modal.getElementsByClassName("modal-body")[0];
+    var current_modal_footer = modal.getElementsByClassName("modal-footer")[0];
+
+    switch(action){
+        case "save":
+            console.log(modal);
+            current_modal_header.textContent = "Save your work";
+            var insert_row_name = document.createElement("input");
+
+            if(current_modal_body.childNodes.length == 1){
+                current_modal_body.appendChild(insert_row_name);
+            }
+
+            insert_row_name.setAttribute("class", "input_save");
+            insert_row_name.setAttribute("placeholder", "Insert your record name here");
+            insert_row_name.setAttribute("type", "text");
+            insert_row_name.style.width = "80%";
+            insert_row_name.style.padding = "10px";
+            insert_row_name.style.margin = "5% 5%";
+
+            current_modal_footer.getElementsByClassName("button_submit_data")[0].textContent = "Save Data"
+
+            break;
+        case "load":
+            console.log("load");
+            current_modal_header.textContent = "Load your work";
+            break;
+        case "view":
+            console.log("view");
+            current_modal_header.textContent = "View your work";
+            break;
+    }
 }
 
 function closeModalFunction(modal){
@@ -28,15 +62,25 @@ window.onload = (e) => {
     var button_default_settings = document.querySelector("#button_default_settings");
 
     //Getting the modal components
-    const saveModal = document.querySelectorAll("[data-modal-target]");
+    const saveModal = document.querySelector("#button_backend_save");
+    const loadModal = document.querySelector("#button_backend_load");
+    const viewModal = document.querySelector("#button_backend_view");
     const closeModal = document.querySelectorAll("[data-close-button]");
     const overlay = document.querySelector("#overlay");
+    var element = document.querySelector(".modal-footer");
+
+    //Section of code to add new tag via javascript. Will be required later.
+    // var sample_tag = document.createElement("button");
+    // var sample_text = document.createTextNode("Sample");
+
+    // sample_tag.appendChild(sample_text);
+    // element.appendChild(sample_tag);
 
     var context = canvas.getContext("2d");
-
     var startPointX, startPointY, endPointX, endPointY;
     var selected_size = 1;
     var current_brush_color = "#000000";
+    var chosen_modal_action = "";
 
     //context.fillStyle = "rgba(0, 0, 0, 1)";
     context.fillStyle = current_brush_color;
@@ -230,11 +274,23 @@ window.onload = (e) => {
         display_color_text.value = color_selector.value;
     });
 
-    saveModal.forEach(button => {
-        button.addEventListener("click", (e) => {
-            const modal = document.querySelector(button.dataset.modalTarget);
-            openModalFunction(modal);
-        })
+    
+    saveModal.addEventListener("click", (e) => {
+        const modal = document.querySelector(saveModal.dataset.modalTarget);
+        chosen_modal_action = "save";
+        openModalFunction(modal, chosen_modal_action);
+    })
+
+    loadModal.addEventListener("click", (e) => {
+        const modal = document.querySelector(loadModal.dataset.modalTarget);
+        chosen_modal_action = "load";
+        openModalFunction(modal, chosen_modal_action);
+    });
+
+    viewModal.addEventListener("click", (e) => {
+        const modal = document.querySelector(viewModal.dataset.modalTarget);
+        chosen_modal_action = "view";
+        openModalFunction(modal, chosen_modal_action);
     });
     
     closeModal.forEach(button => {

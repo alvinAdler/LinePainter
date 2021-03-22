@@ -75,6 +75,13 @@ body, html{
     border-bottom: 1px solid black;
 }
 
+.modal .modal-footer{
+    padding: 10px 15px;
+    display: flex;
+    flex-direction: row-reverse;
+    border-top: 1px solid black;
+}
+
 .modal .modal-close{
     cursor: pointer;
     border: none;
@@ -82,6 +89,11 @@ body, html{
     background: none;
     font-weight: bold;
     font-size: 1.25rem;
+}
+
+.button_submit_data{
+    font-weight: bold;
+    padding: 5px;
 }
 
 .modal .modal-body{
