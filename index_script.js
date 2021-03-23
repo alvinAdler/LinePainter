@@ -14,18 +14,29 @@ function openModalFunction(modal, action){
         case "save":
             console.log(modal);
             current_modal_header.textContent = "Save your work";
+            var insert_user_name = document.createElement("input");
             var insert_row_name = document.createElement("input");
 
             if(current_modal_body.childNodes.length == 1){
+                current_modal_body.appendChild(insert_user_name);
                 current_modal_body.appendChild(insert_row_name);
             }
 
             insert_row_name.setAttribute("class", "input_save");
             insert_row_name.setAttribute("placeholder", "Insert your record name here");
             insert_row_name.setAttribute("type", "text");
+            insert_row_name.required = true;
             insert_row_name.style.width = "80%";
             insert_row_name.style.padding = "10px";
             insert_row_name.style.margin = "5% 5%";
+
+            insert_user_name.setAttribute("class", "input_save");
+            insert_user_name.setAttribute("placeholder", "Insert your name here");
+            insert_user_name.setAttribute("type", "text");
+            insert_user_name.required = true;
+            insert_user_name.style.width = "80%";
+            insert_user_name.style.padding = "10px";
+            insert_user_name.style.margin = "5% 5%";
 
             current_modal_footer.getElementsByClassName("button_submit_data")[0].textContent = "Save Data"
 

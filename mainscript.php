@@ -24,9 +24,5 @@
             $record_line_colors .= $current_data->line_color . "|";
             $record_line_weights .= $current_data->line_weight . "|";
         }
-        
-        echo $record_line_coordinates;
-        echo $record_line_colors;
-        echo $record_line_weights;
     }
 ?>
