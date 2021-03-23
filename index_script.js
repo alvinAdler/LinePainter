@@ -25,14 +25,16 @@ function openModalFunction(modal, action){
             insert_row_name.setAttribute("class", "input_save");
             insert_row_name.setAttribute("placeholder", "Insert your record name here");
             insert_row_name.setAttribute("type", "text");
+            insert_row_name.setAttribute("id", "recordname");
             insert_row_name.required = true;
             insert_row_name.style.width = "80%";
             insert_row_name.style.padding = "10px";
             insert_row_name.style.margin = "5% 5%";
 
-            insert_user_name.setAttribute("class", "input_save");
+            insert_user_name.setAttribute("class", "input_username");
             insert_user_name.setAttribute("placeholder", "Insert your name here");
             insert_user_name.setAttribute("type", "text");
+            insert_user_name.setAttribute("id", "username");
             insert_user_name.required = true;
             insert_user_name.style.width = "80%";
             insert_user_name.style.padding = "10px";
@@ -311,8 +313,12 @@ window.onload = (e) => {
     });
 
     submitModal.addEventListener("click", (e) => {
+        let username = document.querySelector("#username").value;
+        let recordname = document.querySelector("#recordname").value;
+
         var data = {
-            "username":"Alvin",
+            "username":username,
+            "recordname":recordname,
             "line_data":line_data
         };
 

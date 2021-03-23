@@ -16,6 +16,8 @@
         ////In this case, we are taking the line color of the first line.
         // echo $json_array->line_data[0]->line_color;
 
+        echo $str_json;
+
         $current_username = $json_array->username;
 
         foreach($json_array->line_data as $current_data){
