@@ -291,6 +291,7 @@ window.onload = (e) => {
     //Event listener to clear the content of canvas
     button_clear_canvas.addEventListener("click", function(e){
         context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+        line_data = [];
     });
 
     //Event listener to reset to default settings
