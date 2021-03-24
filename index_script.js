@@ -12,7 +12,6 @@ function openModalFunction(modal, action){
 
     switch(action){
         case "save":
-            console.log(modal);
             current_modal_header.textContent = "Save your work";
             var insert_user_name = document.createElement("input");
             var insert_row_name = document.createElement("input");
@@ -329,11 +328,15 @@ window.onload = (e) => {
 
         http_request.send(json_string);
 
+        const modal = submitModal.closest(".modal");
+
         http_request.onreadystatechange = function(e) {
             if (http_request.readyState === 4 && http_request.status === 200) {
-                console.log(http_request.responseText);
+                alert(http_request.responseText);
             }
         }
+
+        closeModalFunction(modal);
 
     });
 
