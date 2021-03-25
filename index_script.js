@@ -74,7 +74,7 @@ function openModalFunction(modal, action){
 
             http_request.onreadystatechange = function(e){
                 if(http_request.readyState == 4 && http_request.status == 200){
-                    alert(http_request.responseText);
+                    console.log(http_request.responseText);
                 }
             }
 
