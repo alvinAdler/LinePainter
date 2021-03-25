@@ -120,3 +120,7 @@ body, html{
     opacity: 1;
     pointer-events: all;
 }
+
+#id_sizes, #input_select_color, #button_clear_canvas, #button_default_settings, #button_backend_save, #button_backend_load, #button_backend_view{
+    cursor: pointer;
+}
