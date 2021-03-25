@@ -77,10 +77,16 @@ function gather_line_data(line_coordinates, line_color, line_weight){
     return current_line_properties;
 }
 
+function clear_canvas(){
+    context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+    line_data = [];
+}
+
 window.onload = (e) => {
     var canvas = document.getElementById("sample_canvas");
     var location_text = document.getElementById("mouse_loc");
     var size_dropdown = document.getElementById("id_sizes");
+    var button_erase_line = document.querySelector("#button_erase_line");
 
     //Getting the color and text input for inputting the color for the brush
     var display_color_text = document.querySelector("#text_show_color");
@@ -102,6 +108,7 @@ window.onload = (e) => {
     var selected_size = 1;
     var current_brush_color = "#000000";
     var chosen_modal_action = "";
+    var eraser_on = false;
 
     //The data of a line consists of: starting and ending point of the line, the weight of the line, and the color of the line;
     var line_data = [];
@@ -290,8 +297,7 @@ window.onload = (e) => {
 
     //Event listener to clear the content of canvas
     button_clear_canvas.addEventListener("click", function(e){
-        context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
-        line_data = [];
+        clear_canvas();
     });
 
     //Event listener to reset to default settings
@@ -302,6 +308,18 @@ window.onload = (e) => {
         color_selector.value = "#000000";
         current_brush_color = color_selector.value;
         display_color_text.value = color_selector.value;
+    });
+
+    //Event listener for the erase button;
+    button_erase_line.addEventListener("click", function(e){
+        if(this.classList.contains("button_active")){
+            eraser_on = false;
+            this.classList.toggle("button_active");
+        }else{  
+            eraser_on = true;
+            this.classList.toggle("button_active");
+        }
+        console.log(eraser_on);
     });
 
     

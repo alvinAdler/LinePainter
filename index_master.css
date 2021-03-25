@@ -100,6 +100,11 @@ body, html{
     padding: 10px 15px;
 }
 
+.button_active{
+    background-color: #3a403c;
+    color: white;
+}
+
 #sample_canvas{
     border: 1px solid black;
 }
@@ -121,6 +126,6 @@ body, html{
     pointer-events: all;
 }
 
-#id_sizes, #input_select_color, #button_clear_canvas, #button_default_settings, #button_backend_save, #button_backend_load, #button_backend_view{
+#id_sizes, #input_select_color, #button_clear_canvas, #button_default_settings, #button_backend_save, #button_backend_load, #button_backend_view, #button_erase_line{
     cursor: pointer;
 }
