@@ -58,6 +58,26 @@ function openModalFunction(modal, action){
         case "view":
             console.log("view");
             current_modal_header.textContent = "View your work";
+
+            var http_request = new XMLHttpRequest();
+
+            var data = {
+                "request_type":"view"
+            };
+
+            var json_string = JSON.stringify(data);
+
+            http_request.open("POST", "mainscript.php", true);
+            http_request.setRequestHeader("Content-type", "application/json");
+
+            http_request.send(json_string);
+
+            http_request.onreadystatechange = function(e){
+                if(http_request.readyState == 4 && http_request.status == 200){
+                    alert(http_request.responseText);
+                }
+            }
+
             break;
     }
 }
@@ -394,28 +414,40 @@ window.onload = (e) => {
     });
 
     submitModal.addEventListener("click", (e) => {
-        let username = document.querySelector("#username").value;
-        let recordname = document.querySelector("#recordname").value;
+        if(chosen_modal_action == "save"){
+            let username = document.querySelector("#username").value;
+            let recordname = document.querySelector("#recordname").value;
 
-        var data = {
-            "username":username,
-            "recordname":recordname,
-            "line_data":line_data
-        };
+            /*TODO:
+            Ask the user if they sure want to save an empty canvas
+            */
+            var data = {
+                "request_type":"save",
+                "username":username,
+                "recordname":recordname,
+                "line_data":line_data
+            };
 
-        json_string = JSON.stringify(data);
+            json_string = JSON.stringify(data);
 
-        http_request.open("POST", "mainscript.php", true);
-        http_request.setRequestHeader("Content-type", "application/json");
+            http_request.open("POST", "mainscript.php", true);
+            http_request.setRequestHeader("Content-type", "application/json");
 
-        http_request.send(json_string);
+            http_request.send(json_string);
 
-        const modal = submitModal.closest(".modal");
+            const modal = submitModal.closest(".modal");
 
-        http_request.onreadystatechange = function(e) {
-            if (http_request.readyState === 4 && http_request.status === 200) {
-                alert(http_request.responseText);
+            http_request.onreadystatechange = function(e) {
+                if (http_request.readyState === 4 && http_request.status === 200) {
+                    alert(http_request.responseText);
+                }
             }
+        }
+        else if(chosen_modal_action == "load"){
+
+        }
+        else if(chosen_modal_action == "view"){
+            alert("View window closed");
         }
 
         closeModalFunction(modal);
