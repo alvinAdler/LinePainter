@@ -1,3 +1,5 @@
+//Function that handles the pop-up window operation
+//In the pop up, user can save, load, or view the works that they have done on the canvas. 
 function openModalFunction(modal, action){
     if(modal == null){
         return
@@ -10,6 +12,8 @@ function openModalFunction(modal, action){
     var current_modal_body = modal.getElementsByClassName("modal-body")[0];
     var current_modal_footer = modal.getElementsByClassName("modal-footer")[0];
 
+    //Switch between the action that user will take. 
+    //There are particularly 3 actions. Each action will lead a different display of the modal pop-up window. 
     switch(action){
         case "save":
             current_modal_header.textContent = "Save your work";
@@ -21,6 +25,7 @@ function openModalFunction(modal, action){
                 current_modal_body.appendChild(insert_row_name);
             }
 
+            //Setting the attributes and styles of the record name input.
             insert_row_name.setAttribute("class", "input_save");
             insert_row_name.setAttribute("placeholder", "Insert your record name here");
             insert_row_name.setAttribute("type", "text");
@@ -30,6 +35,7 @@ function openModalFunction(modal, action){
             insert_row_name.style.padding = "10px";
             insert_row_name.style.margin = "5% 5%";
 
+            //Setting the attributes and styles of the user name input. 
             insert_user_name.setAttribute("class", "input_username");
             insert_user_name.setAttribute("placeholder", "Insert your name here");
             insert_user_name.setAttribute("type", "text");
@@ -39,6 +45,9 @@ function openModalFunction(modal, action){
             insert_user_name.style.padding = "10px";
             insert_user_name.style.margin = "5% 5%";
 
+            //If the current action is "save", display a button with name "save data" to the user.
+            //The button for it is already in there. That particular button can be used for anything. 
+            //We just need to change or toggle the class or make some identifier regarding which action should be taken at which time.
             current_modal_footer.getElementsByClassName("button_submit_data")[0].textContent = "Save Data"
 
             break;
@@ -53,6 +62,7 @@ function openModalFunction(modal, action){
     }
 }
 
+//Function to close the modal pop-up window. 
 function closeModalFunction(modal){
     if(modal == null){
         return
@@ -62,6 +72,8 @@ function closeModalFunction(modal){
     overlay.classList.remove("active");
 }
 
+//Function to take the given coordinates (startind point and ending point), merge them into an array, and then return it. 
+//The usage of it is to unifiy the coordinate as one; to ease the process to transfer data to the server. 
 function hold_coordinate(starting_point_x, starting_point_y, ending_point_x, ending_point_y){
     var temp = [starting_point_x, starting_point_y, ending_point_x, ending_point_y];
     return temp;
@@ -77,12 +89,175 @@ function gather_line_data(line_coordinates, line_color, line_weight){
     return current_line_properties;
 }
 
-function clear_canvas(){
+
+//function to draw data
+function draw_data(line_data, canvas){
+    var context = canvas.getContext("2d");
     context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
-    line_data = [];
+
+    for(let item of line_data){
+        draw_line(item["line_coordinates"][0], item["line_coordinates"][1], item["line_coordinates"][2], item["line_coordinates"][3], item["line_color"], item["line_weight"], context);
+    }
+}
+
+//Function to draw a line given 2 end points.
+function draw_line(p1x, p1y, p2x, p2y, color, brush_size, context){
+    var dx = Math.abs(p1x - p2x);
+    var dy = Math.abs(p1y - p2y);
+    
+    var m = Math.abs(dy/dx);
+    var n = Math.abs(dx/dy);
+
+    context.fillStyle = color;
+
+    //Case 1: Horizontal line => Left to Right
+    if(p1x < p2x && p1y == p2y){
+        for(let coor_x=p1x; coor_x<=p2x; coor_x+=1){
+            context.fillRect(coor_x, p1y, brush_size, brush_size);
+        }
+    }
+
+    //Case 2: Horizontal line => Right to Left
+    else if (p1x > p2x && p1y == p2y) {
+        for(let coor_x=p1x; coor_x>=p2x; coor_x-=1){
+            context.fillRect(coor_x, p1y, brush_size, brush_size);
+        }
+    }
+
+    //Case 3: Vertical Line => Top to Bottom
+    else if(p1x == p2x && p1y <= p2y){
+        for(let coor_y = p1y; coor_y <= p2y; coor_y+=1){
+            context.fillRect(p1x, coor_y, brush_size, brush_size);
+        }
+    }
+    
+    //Case 4: Vertical Line => Bottom to Top
+    else if(p1x == p2x && p1y >= p2y){
+        for(let coor_y = p1y; coor_y >= p2y; coor_y-=1){
+            context.fillRect(p1x, coor_y, brush_size, brush_size);
+        }
+    }
+
+    //Case 5: Oblique line => Bottom Left to Top Right
+    else if(dx == dy && p1x < p2x && p1y > p2y){
+        let coor_y = p1y;
+        for(let coor_x = p1x; coor_x <= p2x; coor_x += 1){
+            context.fillRect(coor_x, coor_y, brush_size, brush_size);
+            coor_y -= 1;
+        }
+    }
+
+    //Case 6: Oblique line => Bottom Right to Top Left
+    else if(dx == dy && p1x > p2x && p1y > p2y){
+        let coor_y = p1y;
+        for(let coor_x = p1x; coor_x >= p2x; coor_x -= 1){
+            context.fillRect(coor_x, coor_y, brush_size, brush_size);
+            coor_y -= 1;
+        }
+    }
+
+    //Case 7: Oblique line => Top Right to Bottom Left
+    else if(dx == dy && p1x > p2x && p1y < p2y){
+        let coor_y = p1y;
+        for(let coor_x = p1x; coor_x >= p2x; coor_x-=1){
+            context.fillRect(coor_x, coor_y, brush_size, brush_size);
+            coor_y += 1;
+        }
+    }
+
+    //Case 8: Oblique line => Top Left to Bottom Right
+    else if(dx == dy && p1x < p2x && p1y < p2y){
+        let coor_y = p1y;
+        for(let coor_x = p1x; coor_x <= p2x; coor_x += 1){
+            context.fillRect(coor_x, coor_y, brush_size, brush_size);
+            coor_y += 1;
+        }
+    }
+
+    //Case 9: Shallow line => Bottom Left to Top Right
+    else if(dx > dy && p1x < p2x && p1y > p2y){
+        coor_y = p1y;
+        for(let coor_x = p1x; coor_x <= p2x; coor_x += 1){
+            context.fillRect(coor_x, Math.round(coor_y), brush_size, brush_size);
+            coor_y =  coor_y - m;
+        }
+    }
+
+    //Case 10: Steep line => Bottom left to Top Right
+    else if(dx < dy && p1x < p2x && p1y > p2y){
+        coor_x = p1x;
+        for(let coor_y = p1y; coor_y >= p2y; coor_y -= 1){
+            context.fillRect(Math.round(coor_x), coor_y, brush_size, brush_size);
+            coor_x += n;
+        }
+    }
+
+    //Case 11: Steep line => Bottom Right to Top Left
+    else if(dx < dy && p1x > p2x && p1y > p2y){
+        coor_x = p1x;
+        for(let coor_y = p1y; coor_y >= p2y; coor_y -= 1){
+            context.fillRect(Math.round(coor_x), coor_y, brush_size, brush_size);
+            coor_x -= n;
+        }
+    }
+
+    //Case 12: Shallow line => Bottom Right to Top Left
+    else if(dx > dy && p1x > p2x && p1y > p2y){
+        coor_y = p1y;
+        for(let coor_x = p1x; coor_x >= p2x; coor_x -= 1){
+            context.fillRect(coor_x, Math.round(coor_y), brush_size, brush_size);
+            coor_y -= m;
+        }
+    }
+
+    //Case 13: Shallow Line => Top Right to Bottom Left
+    else if(dx > dy && p1x > p2x && p1y < p2y){
+        coor_y = p1y;
+        for(let coor_x = p1x; coor_x >= p2x; coor_x -= 1){
+            context.fillRect(coor_x, Math.round(coor_y), brush_size, brush_size);
+            coor_y += m;
+        }
+    }
+
+    //Case 14: Steep Line => Top Right to Bottom Left
+    else if(dx < dy && p1x > p2x && p1y < p2y){
+        coor_x = p1x;
+        for(let coor_y = p1y; coor_y <= p2y; coor_y += 1){
+            context.fillRect(Math.round(coor_x), coor_y, brush_size, brush_size);
+            coor_x -= n;
+        }
+    }
+
+    //Case 15: Steep Line => Top Left to Bottom Right
+    else if(dx < dy && p1x < p2x && p1y < p2y){
+        coor_x = p1x;
+        for(let coor_y = p1y; coor_y <= p2y; coor_y += 1){
+            context.fillRect(Math.round(coor_x), coor_y, brush_size, brush_size);
+            coor_x += n;
+        }
+    }
+
+    //Case 16: Shallow Line => Top left to Bottom Right
+    else if(dx > dy && p1x < p2x && p1y < p2y){
+        coor_y = p1y;
+        for(let coor_x = p1x; coor_x <= p2x; coor_x += 1){
+            context.fillRect(coor_x, Math.round(coor_y), brush_size, brush_size);
+            coor_y += m;
+        }
+    }
 }
 
 window.onload = (e) => {
+
+    function set_default(){
+        selected_size = 1;
+        size_dropdown.value = "";
+
+        color_selector.value = "#000000";
+        current_brush_color = color_selector.value;
+        display_color_text.value = color_selector.value;
+    }
+
     var canvas = document.getElementById("sample_canvas");
     var location_text = document.getElementById("mouse_loc");
     var size_dropdown = document.getElementById("id_sizes");
@@ -109,6 +284,7 @@ window.onload = (e) => {
     var current_brush_color = "#000000";
     var chosen_modal_action = "";
     var eraser_on = false;
+    var del_line_x = 0, del_line_y = 0;
 
     //The data of a line consists of: starting and ending point of the line, the weight of the line, and the color of the line;
     var line_data = [];
@@ -116,167 +292,59 @@ window.onload = (e) => {
 
     var http_request = new XMLHttpRequest();
 
+    set_default();
+
     //context.fillStyle = "rgba(0, 0, 0, 1)";
     context.fillStyle = current_brush_color;
-
-    function draw_line(p1x, p1y, p2x, p2y, color, brush_size){
-        var dx = Math.abs(p1x - p2x);
-        var dy = Math.abs(p1y - p2y);
-        
-        var m = Math.abs(dy/dx);
-        var n = Math.abs(dx/dy);
-
-        context.fillStyle = color;
-
-        //Case 1: Horizontal line => Left to Right
-        if(p1x < p2x && p1y == p2y){
-            for(let coor_x=p1x; coor_x<=p2x; coor_x+=1){
-                context.fillRect(coor_x, p1y, brush_size, brush_size);
-            }
-        }
-
-        //Case 2: Horizontal line => Right to Left
-        else if (p1x > p2x && p1y == p2y) {
-            for(let coor_x=p1x; coor_x>=p2x; coor_x-=1){
-                context.fillRect(coor_x, p1y, brush_size, brush_size);
-            }
-        }
-
-        //Case 3: Vertical Line => Top to Bottom
-        else if(p1x == p2x && p1y <= p2y){
-            for(let coor_y = p1y; coor_y <= p2y; coor_y+=1){
-                context.fillRect(p1x, coor_y, brush_size, brush_size);
-            }
-        }
-        
-        //Case 4: Vertical Line => Bottom to Top
-        else if(p1x == p2x && p1y >= p2y){
-            for(let coor_y = p1y; coor_y >= p2y; coor_y-=1){
-                context.fillRect(p1x, coor_y, brush_size, brush_size);
-            }
-        }
-
-        //Case 5: Oblique line => Bottom Left to Top Right
-        else if(dx == dy && p1x < p2x && p1y > p2y){
-            let coor_y = p1y;
-            for(let coor_x = p1x; coor_x <= p2x; coor_x += 1){
-                context.fillRect(coor_x, coor_y, brush_size, brush_size);
-                coor_y -= 1;
-            }
-        }
-
-        //Case 6: Oblique line => Bottom Right to Top Left
-        else if(dx == dy && p1x > p2x && p1y > p2y){
-            let coor_y = p1y;
-            for(let coor_x = p1x; coor_x >= p2x; coor_x -= 1){
-                context.fillRect(coor_x, coor_y, brush_size, brush_size);
-                coor_y -= 1;
-            }
-        }
-
-        //Case 7: Oblique line => Top Right to Bottom Left
-        else if(dx == dy && p1x > p2x && p1y < p2y){
-            let coor_y = p1y;
-            for(let coor_x = p1x; coor_x >= p2x; coor_x-=1){
-                context.fillRect(coor_x, coor_y, brush_size, brush_size);
-                coor_y += 1;
-            }
-        }
-
-        //Case 8: Oblique line => Top Left to Bottom Right
-        else if(dx == dy && p1x < p2x && p1y < p2y){
-            let coor_y = p1y;
-            for(let coor_x = p1x; coor_x <= p2x; coor_x += 1){
-                context.fillRect(coor_x, coor_y, brush_size, brush_size);
-                coor_y += 1;
-            }
-        }
-
-        //Case 9: Shallow line => Bottom Left to Top Right
-        else if(dx > dy && p1x < p2x && p1y > p2y){
-            coor_y = p1y;
-            for(let coor_x = p1x; coor_x <= p2x; coor_x += 1){
-                context.fillRect(coor_x, Math.round(coor_y), brush_size, brush_size);
-                coor_y =  coor_y - m;
-            }
-        }
-
-        //Case 10: Steep line => Bottom left to Top Right
-        else if(dx < dy && p1x < p2x && p1y > p2y){
-            coor_x = p1x;
-            for(let coor_y = p1y; coor_y >= p2y; coor_y -= 1){
-                context.fillRect(Math.round(coor_x), coor_y, brush_size, brush_size);
-                coor_x += n;
-            }
-        }
-
-        //Case 11: Steep line => Bottom Right to Top Left
-        else if(dx < dy && p1x > p2x && p1y > p2y){
-            coor_x = p1x;
-            for(let coor_y = p1y; coor_y >= p2y; coor_y -= 1){
-                context.fillRect(Math.round(coor_x), coor_y, brush_size, brush_size);
-                coor_x -= n;
-            }
-        }
-
-        //Case 12: Shallow line => Bottom Right to Top Left
-        else if(dx > dy && p1x > p2x && p1y > p2y){
-            coor_y = p1y;
-            for(let coor_x = p1x; coor_x >= p2x; coor_x -= 1){
-                context.fillRect(coor_x, Math.round(coor_y), brush_size, brush_size);
-                coor_y -= m;
-            }
-        }
-
-        //Case 13: Shallow Line => Top Right to Bottom Left
-        else if(dx > dy && p1x > p2x && p1y < p2y){
-            coor_y = p1y;
-            for(let coor_x = p1x; coor_x >= p2x; coor_x -= 1){
-                context.fillRect(coor_x, Math.round(coor_y), brush_size, brush_size);
-                coor_y += m;
-            }
-        }
-
-        //Case 14: Steep Line => Top Right to Bottom Left
-        else if(dx < dy && p1x > p2x && p1y < p2y){
-            coor_x = p1x;
-            for(let coor_y = p1y; coor_y <= p2y; coor_y += 1){
-                context.fillRect(Math.round(coor_x), coor_y, brush_size, brush_size);
-                coor_x -= n;
-            }
-        }
-
-        //Case 15: Steep Line => Top Left to Bottom Right
-        else if(dx < dy && p1x < p2x && p1y < p2y){
-            coor_x = p1x;
-            for(let coor_y = p1y; coor_y <= p2y; coor_y += 1){
-                context.fillRect(Math.round(coor_x), coor_y, brush_size, brush_size);
-                coor_x += n;
-            }
-        }
-
-        //Case 16: Shallow Line => Top left to Bottom Right
-        else if(dx > dy && p1x < p2x && p1y < p2y){
-            coor_y = p1y;
-            for(let coor_x = p1x; coor_x <= p2x; coor_x += 1){
-                context.fillRect(coor_x, Math.round(coor_y), brush_size, brush_size);
-                coor_y += m;
-            }
-        }
-    }
 
     //Creating the event listeners for the canvas
 
     canvas.addEventListener("mousedown", function(e){
-        [startPointX, startPointY] = [parseInt(e.offsetX), parseInt(e.offsetY)];
+        if(eraser_on == false){
+            [startPointX, startPointY] = [parseInt(e.offsetX), parseInt(e.offsetY)];
+        }else{
+            //Remove the line
+            del_line_x = parseInt(e.offsetX);
+            del_line_y = parseInt(e.offsetY);
+
+            function array_remove (arr, value){
+                return arr.filter(function(element){
+                    return element != value;
+                });
+            }
+
+            for(let item of line_data){
+                // let slope1, slope2, slope3;
+                let p1p2, p2p3, p1p3;
+                //line_coordinates index: 
+                //[0] = x1 --- [1] = y1 --- [2] = x2 ---- [3] = y2
+
+                p1p2 = Math.sqrt(Math.pow((del_line_y - item["line_coordinates"][1]), 2) + Math.pow((del_line_x - item["line_coordinates"][0]), 2));
+                p2p3 = Math.sqrt(Math.pow((item["line_coordinates"][3] - del_line_y), 2) + Math.pow((item["line_coordinates"][2] - del_line_x), 2));
+                p1p3 = Math.sqrt(Math.pow((item["line_coordinates"][3] - item["line_coordinates"][1]), 2) + Math.pow((item["line_coordinates"][2] - item["line_coordinates"][0]), 2));
+
+                console.log(p1p2 + p2p3);
+                console.log(p1p3);
+                console.log("=================================");
+
+                if(Math.round(p1p2 + p2p3) == Math.round(p1p3)){
+                    line_data = array_remove(line_data, item);
+                    console.log(line_data);
+                    break;
+                }
+            }
+            
+            draw_data(line_data, canvas);
+        }
     });
 
     canvas.addEventListener("mouseup", function(e){
-        [endPointX, endPointY] = [parseInt(e.offsetX), parseInt(e.offsetY)];
-        console.log("Start point: "+ startPointX.toString() + "," + startPointY.toString() + "\n" + "Ending point: " + endPointX.toString() + "," + endPointY.toString());
-        draw_line(startPointX, startPointY, endPointX, endPointY, current_brush_color, selected_size);
+        if(eraser_on == false){
+            [endPointX, endPointY] = [parseInt(e.offsetX), parseInt(e.offsetY)];
+            draw_line(startPointX, startPointY, endPointX, endPointY, current_brush_color, selected_size, context);
 
-        line_data.push(gather_line_data(hold_coordinate(startPointX, startPointY, endPointX, endPointY), display_color_text.value, selected_size));
+            line_data.push(gather_line_data(hold_coordinate(startPointX, startPointY, endPointX, endPointY), display_color_text.value, selected_size));
+        }
     });
 
     canvas.addEventListener("mousemove", function(e){
@@ -297,17 +365,13 @@ window.onload = (e) => {
 
     //Event listener to clear the content of canvas
     button_clear_canvas.addEventListener("click", function(e){
-        clear_canvas();
+        context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+        line_data = [];
     });
 
     //Event listener to reset to default settings
     button_default_settings.addEventListener("click", function(e){
-        selected_size = 1;
-        size_dropdown.value = "";
-
-        color_selector.value = "#000000";
-        current_brush_color = color_selector.value;
-        display_color_text.value = color_selector.value;
+        set_default();
     });
 
     //Event listener for the erase button;
@@ -319,7 +383,6 @@ window.onload = (e) => {
             eraser_on = true;
             this.classList.toggle("button_active");
         }
-        console.log(eraser_on);
     });
 
     
@@ -386,3 +449,21 @@ window.onload = (e) => {
     });
 
 };
+
+////Lines of code to print the starting and ending point for the current line into the console. 
+////Might be required later. 
+//console.log("Start point: "+ startPointX.toString() + "," + startPointY.toString() + "\n" + "Ending point: " + endPointX.toString() + "," + endPointY.toString());
+
+//Lines of code to check whether a point between 2 points is collinear or not. 
+// slope1 = (del_line_y - item["line_coordinates"][1]) / (del_line_x - item["line_coordinates"][0]);
+//                 slope2 = (item["line_coordinates"][3] - del_line_y) / (item["line_coordinates"][2] - del_line_x);
+
+//                 console.log(slope1);
+//                 console.log(slope2);
+//                 console.log("==========================");
+        
+//                 if(Math.round(slope1) == Math.round(slope2)){
+//                     line_data = array_remove(line_data, item);
+//                     console.log(line_data);
+//                     break;
+//                 }
