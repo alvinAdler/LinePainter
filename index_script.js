@@ -5,9 +5,6 @@ function openModalFunction(modal, action){
         return
     }
 
-    modal.classList.add("active");
-    overlay.classList.add("active");
-
     var current_modal_header = modal.getElementsByClassName("modal-header")[0].getElementsByClassName("modal-title")[0];
     var current_modal_body = modal.getElementsByClassName("modal-body")[0];
     var current_modal_footer = modal.getElementsByClassName("modal-footer")[0];
@@ -16,11 +13,13 @@ function openModalFunction(modal, action){
     //There are particularly 3 actions. Each action will lead a different display of the modal pop-up window. 
     switch(action){
         case "save":
+            modal.classList.add("active");
+            overlay.classList.add("active");
             current_modal_header.textContent = "Save your work";
             var insert_user_name = document.createElement("input");
             var insert_row_name = document.createElement("input");
 
-            if(current_modal_body.childNodes.length == 1){
+            if(current_modal_body.childNodes.length == 0){
                 current_modal_body.appendChild(insert_user_name);
                 current_modal_body.appendChild(insert_row_name);
             }
@@ -52,14 +51,15 @@ function openModalFunction(modal, action){
 
             break;
         case "load":
-            console.log("load");
             current_modal_header.textContent = "Load your work";
             break;
         case "view":
-            console.log("view");
+            modal.classList.add("active");
+            overlay.classList.add("active");
             current_modal_header.textContent = "View your work";
-
+            modal.style.width = "60%";
             var http_request = new XMLHttpRequest();
+            var server_data = "";
 
             var data = {
                 "request_type":"view"
@@ -74,7 +74,47 @@ function openModalFunction(modal, action){
 
             http_request.onreadystatechange = function(e){
                 if(http_request.readyState == 4 && http_request.status == 200){
-                    console.log(http_request.responseText);
+                    server_data = JSON.parse(http_request.responseText);
+                    console.log(server_data);
+                    var current_modal_body = modal.getElementsByClassName("modal-body")[0];
+                    var table_data = document.createElement("table");
+
+                    var header_elements = new Array("No", "Username", "Recordname", "LinesQuantity", "ColorsQuantity", "WeightVariant");
+                
+                    
+                    //Handle the table's default attributes
+                    table_data.style.width = "100%";
+                    table_data.style.border = "2px solid black";
+                    table_data.style.fontSize = "75%";
+                    table_data.setAttribute("id", "view_table");
+                    
+                    var current_row = document.createElement("tr");
+                    current_row = table_data.insertRow(0);
+
+                    //Handle the header of the table
+                    for(let index=0; index<header_elements.length; index+=1){
+                        var th = document.createElement("th");
+                        th.textContent = header_elements[index];
+                        current_row.appendChild(th);
+                    }
+                    table_data.appendChild(current_row);
+
+
+                    //Handle the data of the table
+                    for(let index=0; index<server_data["usernames"].length; index+=1){
+                        current_row = table_data.insertRow(index+1);
+                        var td = document.createElement("td");
+                        td.textContent = index+1;
+                        current_row.appendChild(td);
+                        for(let key of Object.keys(server_data)){
+                            var td = document.createElement("td");
+                            td.textContent = server_data[key][index];
+                            current_row.appendChild(td);
+                        }
+                        table_data.appendChild(current_row);
+                    }
+                    
+                    current_modal_body.appendChild(table_data);
                 }
             }
 
@@ -90,6 +130,12 @@ function closeModalFunction(modal){
 
     modal.classList.remove("active");
     overlay.classList.remove("active");
+    modal.style.width = "40%";
+    var current_body = modal.getElementsByClassName("modal-body")[0];
+
+    while(current_body.firstChild){
+        current_body.removeChild(current_body.lastChild);
+    }
 }
 
 //Function to take the given coordinates (startind point and ending point), merge them into an array, and then return it. 
@@ -414,7 +460,13 @@ window.onload = (e) => {
     });
 
     submitModal.addEventListener("click", (e) => {
+        const modal = submitModal.closest(".modal");
         if(chosen_modal_action == "save"){
+
+            /*TODO:
+            Make a validation; user must not submit/save the record if they did not put--
+            -- the username AND the recordname
+            */
             let username = document.querySelector("#username").value;
             let recordname = document.querySelector("#recordname").value;
 
@@ -434,8 +486,6 @@ window.onload = (e) => {
             http_request.setRequestHeader("Content-type", "application/json");
 
             http_request.send(json_string);
-
-            const modal = submitModal.closest(".modal");
 
             http_request.onreadystatechange = function(e) {
                 if (http_request.readyState === 4 && http_request.status === 200) {

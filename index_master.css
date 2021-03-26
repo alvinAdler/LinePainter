@@ -6,6 +6,11 @@ body, html{
     font-family: sans-serif;
 }
 
+table, th, td{
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
 .container{
     position: relative;
     text-align: center;
@@ -59,7 +64,7 @@ body, html{
     border-radius: 10px;
     z-index: 10;
     background-color: white;
-    width: 500px;
+    width: 40%;
     max-width: 80%;
 }
 
@@ -126,6 +131,6 @@ body, html{
     pointer-events: all;
 }
 
-#id_sizes, #input_select_color, #button_clear_canvas, #button_default_settings, #button_backend_save, #button_backend_load, #button_backend_view, #button_erase_line{
+#id_sizes, #input_select_color, #button_clear_canvas, #button_default_settings, #button_backend_save, #button_backend_load, #button_backend_view, #button_erase_line, .button_submit_data{
     cursor: pointer;
 }
