@@ -151,6 +151,8 @@ function openModalFunction(modal, action){
                 }
             }
 
+            current_modal_footer.getElementsByClassName("button_submit_data")[0].textContent = "Ok";
+
             break;
     }
 }
@@ -494,6 +496,8 @@ window.onload = (e) => {
 
     submitModal.addEventListener("click", (e) => {
         const modal = submitModal.closest(".modal");
+        let violent = false;
+        let violent_message = "";
         if(chosen_modal_action == "save"){
 
             /*TODO:
@@ -503,50 +507,68 @@ window.onload = (e) => {
             let username = document.querySelector("#username").value;
             let recordname = document.querySelector("#recordname").value;
 
-            /*TODO:
-            Ask the user if they sure want to save an empty canvas
-            */
-            var data = {
-                "request_type":"save",
-                "username":username,
-                "recordname":recordname,
-                "line_data":line_data
-            };
+            if((username) && (recordname)){
+                violent = false;
+                /*TODO:
+                Ask the user if they sure want to save an empty canvas
+                */
+                var data = {
+                    "request_type":"save",
+                    "username":username,
+                    "recordname":recordname,
+                    "line_data":line_data
+                };
 
-            json_string = JSON.stringify(data);
+                json_string = JSON.stringify(data);
 
-            http_request.open("POST", "mainscript.php", true);
-            http_request.setRequestHeader("Content-type", "application/json");
+                http_request.open("POST", "mainscript.php", true);
+                http_request.setRequestHeader("Content-type", "application/json");
 
-            http_request.send(json_string);
+                http_request.send(json_string);
 
-            http_request.onreadystatechange = function(e) {
-                if (http_request.readyState === 4 && http_request.status === 200) {
-                    alert(http_request.responseText);
+                http_request.onreadystatechange = function(e) {
+                    if (http_request.readyState === 4 && http_request.status === 200) {
+                        alert(http_request.responseText);
+                    }
                 }
+            }else{
+                violent_message = "Please fill in the user name and the record name";
+                violent = true;
             }
         }
         else if(chosen_modal_action == "load"){
             var insertedRecordName = document.querySelector("#loadRecordName").value;
             var insertedUserName = document.querySelector("#loadUserName").value;
 
-            var data = {
-                "request_type":"load",
-                "requested_username":insertedUserName,
-                "requested_recordname":insertedRecordName
-            }
-
-            json_string = JSON.stringify(data);
-            http_request.open("POST", "mainscript.php", true);
-            http_request.setRequestHeader("Content-type", "application/json");
-
-            http_request.send(json_string);
-
-            http_request.onreadystatechange = function(e){
-                if(http_request.readyState === 4 && http_request.status === 200){
-                    line_data = JSON.parse(http_request.responseText);
-                    draw_data(line_data, canvas);
+            if((insertedRecordName) && (insertedUserName)){
+                violent = false;
+                var data = {
+                    "request_type":"load",
+                    "requested_username":insertedUserName,
+                    "requested_recordname":insertedRecordName
                 }
+    
+                json_string = JSON.stringify(data);
+                http_request.open("POST", "mainscript.php", true);
+                http_request.setRequestHeader("Content-type", "application/json");
+    
+                http_request.send(json_string);
+    
+                http_request.onreadystatechange = function(e){
+                    if(http_request.readyState === 4 && http_request.status === 200){
+                        response_message = http_request.responseText;
+                        if(response_message == "No Data"){
+                            alert("No data found");
+                        }
+                        else{
+                            line_data = JSON.parse(http_request.responseText);
+                            draw_data(line_data, canvas);
+                        }
+                    }
+                }
+            }else{
+                violent_message = "Please fill in the targeted user name and record name";
+                violent = true;
             }
 
         }
@@ -554,7 +576,11 @@ window.onload = (e) => {
             alert("View window closed");
         }
 
-        closeModalFunction(modal);
+        if(!violent){
+            closeModalFunction(modal);
+        }else{
+            alert(violent_message);
+        }
 
     });
 

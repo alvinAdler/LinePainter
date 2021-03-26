@@ -50,19 +50,24 @@
             $statement = $conn->prepare("SELECT * FROM `user_save_record` WHERE `userName` = '$json_array->requested_username' AND `recordName` = '$json_array->requested_recordname'");
             $statement->execute();
 
-            $fetched_data = $statement->fetchAll();
+            if($statement->rowCount() > 0){
+                $fetched_data = $statement->fetchAll();
 
-            $send_data = array();
+                $send_data = array();
 
-            $arr_line_coordinates = explode("|", $fetched_data[0]["lineCoordinates"]);
-            $arr_line_colors = explode("|", $fetched_data[0]["lineColors"]);
-            $arr_line_weights = explode("|", $fetched_data[0]["lineWeights"]);
+                $arr_line_coordinates = explode("|", $fetched_data[0]["lineCoordinates"]);
+                $arr_line_colors = explode("|", $fetched_data[0]["lineColors"]);
+                $arr_line_weights = explode("|", $fetched_data[0]["lineWeights"]);
 
-            for($index=0; $index<count($arr_line_coordinates); $index+=1){
-                array_push($send_data, merge_item($arr_line_coordinates[$index], $arr_line_colors[$index], $arr_line_weights[$index]));
+                for($index=0; $index<count($arr_line_coordinates); $index+=1){
+                    array_push($send_data, merge_item($arr_line_coordinates[$index], $arr_line_colors[$index], $arr_line_weights[$index]));
+                }
+
+                echo json_encode($send_data);
             }
-
-            echo json_encode($send_data);
+            else{
+                echo "No Data";
+            }
         }
         else if($json_array->request_type == "view"){
             $statement = $conn->prepare("SELECT * FROM `user_save_record`");
