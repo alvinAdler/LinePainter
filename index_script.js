@@ -51,7 +51,40 @@ function openModalFunction(modal, action){
 
             break;
         case "load":
+            modal.classList.add("active");
+            overlay.classList.add("active");
             current_modal_header.textContent = "Load your work";
+
+            var usernameInput = document.createElement("input");
+            var recordnameInput = document.createElement("input");
+
+            if(current_modal_body.childNodes.length == 0){
+                current_modal_body.appendChild(usernameInput);
+                current_modal_body.appendChild(recordnameInput);
+            }
+
+            //Setting the attributes and styles of the record name input.
+            recordnameInput.setAttribute("class", "recordInput");
+            recordnameInput.setAttribute("placeholder", "Insert record name to be loaded");
+            recordnameInput.setAttribute("type", "text");
+            recordnameInput.setAttribute("id", "loadRecordName");
+            recordnameInput.required = true;
+            recordnameInput.style.width = "80%";
+            recordnameInput.style.padding = "10px";
+            recordnameInput.style.margin = "5% 5%";
+
+            //Setting the attributes and styles of the user name input. 
+            usernameInput.setAttribute("class", "nameInput");
+            usernameInput.setAttribute("placeholder", "Insert the owner of the record");
+            usernameInput.setAttribute("type", "text");
+            usernameInput.setAttribute("id", "loadUserName");
+            usernameInput.required = true;
+            usernameInput.style.width = "80%";
+            usernameInput.style.padding = "10px";
+            usernameInput.style.margin = "5% 5%";
+
+            current_modal_footer.getElementsByClassName("button_submit_data")[0].textContent = "Load Data"
+
             break;
         case "view":
             modal.classList.add("active");
@@ -494,6 +527,27 @@ window.onload = (e) => {
             }
         }
         else if(chosen_modal_action == "load"){
+            var insertedRecordName = document.querySelector("#loadRecordName").value;
+            var insertedUserName = document.querySelector("#loadUserName").value;
+
+            var data = {
+                "request_type":"load",
+                "requested_username":insertedUserName,
+                "requested_recordname":insertedRecordName
+            }
+
+            json_string = JSON.stringify(data);
+            http_request.open("POST", "mainscript.php", true);
+            http_request.setRequestHeader("Content-type", "application/json");
+
+            http_request.send(json_string);
+
+            http_request.onreadystatechange = function(e){
+                if(http_request.readyState === 4 && http_request.status === 200){
+                    line_data = JSON.parse(http_request.responseText);
+                    draw_data(line_data, canvas);
+                }
+            }
 
         }
         else if(chosen_modal_action == "view"){
